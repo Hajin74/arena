@@ -37,4 +37,12 @@ public class Match {
         this.status = MatchStatus.SCHEDULED;
     }
 
+    public void startMatch() {
+        this.status = MatchStatus.ONGOING;
+    }
+
+    public void closeMatch() {
+        this.status = MatchStatus.COMPLETED;
+    }
+
 }

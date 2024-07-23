@@ -6,6 +6,8 @@ import org.example.boxingarena.domain.Match;
 import org.example.boxingarena.repository.*;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -34,6 +36,20 @@ public class MatchService {
 
         Match scheduledMath = new Match(tournamentId, totalRoundsCount, redCornerPlayerId, blueCornerPlayerId, judgeName);
         matchRepository.save(scheduledMath);
+    }
+
+    public List<Match> findMatch(Long tournamentId, Long playerId) {
+        if (!tournamentRepository.existsById(tournamentId)) {
+            // todo : 예외처리
+            log.info("Invalid tournament ID: " + tournamentId);
+        }
+
+        if (!playerRepository.existsById(playerId)) {
+            // todo : 예외처리
+            log.info("Invalid player ID: " + playerId);
+        }
+
+        return matchRepository.findAllByTournamentIdAndRedCornerPlayerIdOrBlueCornerPlayerId(tournamentId, playerId, playerId);
     }
 
 }
