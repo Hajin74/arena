@@ -14,6 +14,10 @@ public class Player {
 
     private String name;
 
+    private String email;
+
+    private String password;
+
     private String gym;
 
     private char sex;
