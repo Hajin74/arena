@@ -43,5 +43,4 @@ public class TournamentService {
         return DetailTournamentResponse.from(detailTournament);
     }
 
-
 }

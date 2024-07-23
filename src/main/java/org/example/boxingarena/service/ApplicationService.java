@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.boxingarena.domain.Application;
 import org.example.boxingarena.domain.Tournament;
 import org.example.boxingarena.domain.TournamentStatus;
+import org.example.boxingarena.dto.ApplicationFormRequest;
+import org.example.boxingarena.exception.CustomException;
+import org.example.boxingarena.exception.ErrorCode;
 import org.example.boxingarena.repository.ApplicationRepository;
 import org.example.boxingarena.repository.OrganizerRepository;
 import org.example.boxingarena.repository.PlayerRepository;
@@ -19,29 +22,27 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ApplicationService {
 
-    private OrganizerRepository organizerRepository;
-    private PlayerRepository playerRepository;
-    private TournamentRepository tournamentRepository;
-    private ApplicationRepository applicationRepository;
+    private final PlayerRepository playerRepository;
+    private final TournamentRepository tournamentRepository;
+    private final ApplicationRepository applicationRepository;
 
     @Transactional
-    public void applyForTournament(Long tournamentId, Long playerId) {
-        Optional<Tournament> tournament = tournamentRepository.findById(tournamentId);
+    public void applyForTournament(Long playerId, ApplicationFormRequest request) {
+        Optional<Tournament> tournament = tournamentRepository.findById(request.getTournamentId());
         if (tournament.isEmpty()) {
-            // todo : 예외처리
-            log.info("Invalid tournament ID: " + tournamentId);
-            return;
+            throw new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND);
         }
 
         if (!playerRepository.existsById(playerId)) {
-            // todo : 예외처리
-            log.info("Invalid player ID: " + playerId);
+            throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
         }
 
-        if (tournament.get().getStatus().equals(TournamentStatus.APPLICATION_OPENING)) {
-            Application newApplication = new Application(tournamentId, playerId);
-            applicationRepository.save(newApplication);
+        if (!tournament.get().getStatus().equals(TournamentStatus.APPLICATION_OPENING)) {
+            throw new CustomException(ErrorCode.APPLICATION_FOR_TOURNAMENT_PERIOD_CLOSED);
         }
+
+        Application newApplication = new Application(request.getTournamentId(), playerId);
+        applicationRepository.save(newApplication);
     }
 }
 
