@@ -16,6 +16,8 @@ public class MatchResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Long tournamentId;
+
     private Long matchId;
 
     private Long winnerId;
@@ -24,7 +26,8 @@ public class MatchResult {
 
     private String score; // json 형식으로 저장할 것임
 
-    public MatchResult(Long matchId, Long winnerId, MatchEndType matchEndType, String score) {
+    public MatchResult(Long tournamentId, Long matchId, Long winnerId, MatchEndType matchEndType, String score) {
+        this.tournamentId = tournamentId;
         this.matchId = matchId;
         this.winnerId = winnerId;
         this.matchEndType = matchEndType;

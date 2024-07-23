@@ -38,7 +38,7 @@ public class MatchService {
         matchRepository.save(scheduledMath);
     }
 
-    public List<Match> findMatch(Long tournamentId, Long playerId) {
+    public List<Match> getMatch(Long tournamentId, Long playerId) {
         if (!tournamentRepository.existsById(tournamentId)) {
             // todo : 예외처리
             log.info("Invalid tournament ID: " + tournamentId);

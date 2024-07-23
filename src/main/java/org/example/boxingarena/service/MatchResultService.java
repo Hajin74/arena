@@ -13,6 +13,7 @@ import org.example.boxingarena.repository.TournamentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -26,7 +27,7 @@ public class MatchResultService {
     private MatchResultRepository matchResultRepository;
 
     @Transactional
-    public void recordMatchScore(Long matchId, Long winnerId, MatchEndType matchEndType, String score) {
+    public void recordMatchScore(Long tournamentId, Long matchId, Long winnerId, MatchEndType matchEndType, String score) {
         Optional<Match> onGoingMatch = matchRepository.findById(matchId);
         if (onGoingMatch.isEmpty()) {
             // todo: 예외 처리
@@ -46,11 +47,17 @@ public class MatchResultService {
         }
 
         // 경기 기록 저장
-        MatchResult matchResult = new MatchResult(matchId, winnerId, matchEndType, score);
+        MatchResult matchResult = new MatchResult(tournamentId, matchId, winnerId, matchEndType, score);
         matchResultRepository.save(matchResult);
 
         // 경기 종료
         onGoingMatch.get().closeMatch();
+    }
+
+    // 대회 경기결과 모두보기
+    @Transactional(readOnly = true)
+    public List<MatchResult> getMatchResultsByTournament(Long tournamentId) {
+        return matchResultRepository.findAllByTournamentId(tournamentId);
     }
 
 }
