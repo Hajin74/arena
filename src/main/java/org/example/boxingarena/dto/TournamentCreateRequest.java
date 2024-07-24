@@ -22,6 +22,4 @@ public class TournamentCreateRequest {
 
     private short totalRoundsCount;
 
-    private Long organizerId;
-
 }

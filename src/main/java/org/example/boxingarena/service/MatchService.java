@@ -38,12 +38,20 @@ public class MatchService {
             throw new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND);
         }
 
+        if (!playerRepository.existsById(request.getRedCornerPlayerId())) {
+            throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
+        }
+
+        if (!playerRepository.existsById(request.getBlueCornerPlayerId())) {
+            throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
+        }
+
         Match scheduledMatch = new Match(request.getTournamentId(), request.getRedCornerPlayerId(),
                 request.getBlueCornerPlayerId(), request.getJudgeName());
         matchRepository.save(scheduledMatch);
     }
 
-    public List<Match> getMatch(Long tournamentId, Long playerId) {
+    public List<Match> getMatchesByTournamentAndPlayer(Long tournamentId, Long playerId) {
         if (!tournamentRepository.existsById(tournamentId)) {
             throw new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND);
         }

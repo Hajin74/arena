@@ -1,9 +1,6 @@
 package org.example.boxingarena.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,6 +19,7 @@ public class MatchResult {
 
     private Long winnerId;
 
+    @Enumerated(EnumType.STRING)
     private MatchEndType matchEndType;
 
     private String score; // json 형식으로 저장할 것임

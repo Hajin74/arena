@@ -27,18 +27,18 @@ public class ApplicationController {
         try {
             applicationService.applyForTournament(playerId, request);
         } catch (CustomException exception) {
-            return;
+            log.info("applyForTournament - exception : " + exception.getMessage());
         }
     }
 
     @PatchMapping("/{applicationId}/approve")
-    public void approveApplication(Long playerId, @PathVariable Long applicationId) {
+    public void approveApplication(Long organizerId, @PathVariable Long applicationId) {
         log.info("approveApplication - api");
 
         try {
-            applicationService.approveApplication(playerId, applicationId);
+            applicationService.approveApplication(organizerId, applicationId);
         } catch (CustomException exception) {
-            return;
+            log.info("approveApplication - exception : " + exception.getMessage());
         }
     }
 

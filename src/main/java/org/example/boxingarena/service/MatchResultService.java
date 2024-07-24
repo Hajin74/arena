@@ -6,10 +6,10 @@ import org.example.boxingarena.domain.Match;
 import org.example.boxingarena.domain.MatchEndType;
 import org.example.boxingarena.domain.MatchResult;
 import org.example.boxingarena.domain.MatchStatus;
-import org.example.boxingarena.repository.MatchRepository;
-import org.example.boxingarena.repository.MatchResultRepository;
-import org.example.boxingarena.repository.PlayerRepository;
-import org.example.boxingarena.repository.TournamentRepository;
+import org.example.boxingarena.dto.MatchResultCreateRequest;
+import org.example.boxingarena.exception.CustomException;
+import org.example.boxingarena.exception.ErrorCode;
+import org.example.boxingarena.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,42 +21,45 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MatchResultService {
 
-    private PlayerRepository playerRepository;
-    private TournamentRepository tournamentRepository;
-    private MatchRepository matchRepository;
-    private MatchResultRepository matchResultRepository;
+    private final PlayerRepository playerRepository;
+    private final OrganizerRepository organizerRepository;
+    private final TournamentRepository tournamentRepository;
+    private final MatchRepository matchRepository;
+    private final MatchResultRepository matchResultRepository;
 
     @Transactional
-    public void recordMatchScore(Long tournamentId, Long matchId, Long winnerId, MatchEndType matchEndType, String score) {
-        Optional<Match> onGoingMatch = matchRepository.findById(matchId);
-        if (onGoingMatch.isEmpty()) {
-            // todo: 예외 처리
-            log.info("Invalid match ID: " + matchId);
-            return;
+    public void recordMatchScore(Long organizerId, MatchResultCreateRequest request) {
+        log.info("recordMatchScore - service");
+
+        if (!organizerRepository.existsById(organizerId)) {
+            throw new CustomException(ErrorCode.ORGANIZER_NOT_FOUND);
         }
 
-        if (!onGoingMatch.get().getStatus().equals(MatchStatus.ONGOING)) {
-            // todo: 예외 처리
-            log.info("Invalid match status");
-            return;
+        if (!tournamentRepository.existsById(request.getTournamentId())) {
+            throw new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND);
         }
 
-        if (!playerRepository.existsById(winnerId)) {
-            // todo : 예외처리
-            log.info("Invalid winnerId ID: " + winnerId);
+        Optional<Match> scheduledMatch = matchRepository.findById(request.getMatchId());
+        if (scheduledMatch.isEmpty()) {
+            throw new CustomException(ErrorCode.MATCH_NOT_FOUND);
         }
 
-        // 경기 기록 저장
-        MatchResult matchResult = new MatchResult(tournamentId, matchId, winnerId, matchEndType, score);
+        if (!playerRepository.existsById(request.getWinnerId())) {
+            throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
+        }
+
+        // 경기 결과 저장
+        MatchResult matchResult = new MatchResult(request.getTournamentId(), request.getMatchId(),
+                request.getWinnerId(), request.getMatchEndType(), request.getScore());
         matchResultRepository.save(matchResult);
 
         // 경기 종료
-        onGoingMatch.get().closeMatch();
+        scheduledMatch.get().closeMatch();
     }
 
     // 대회 경기결과 모두보기
     @Transactional(readOnly = true)
-    public List<MatchResult> getMatchResultsByTournament(Long tournamentId) {
+    public List<MatchResult> getMatchesResultsByTournament(Long tournamentId) {
         return matchResultRepository.findAllByTournamentId(tournamentId);
     }
 
