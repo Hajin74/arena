@@ -52,32 +52,46 @@ public class ApplicationService {
     }
 
     @Transactional
-    public void approveApplication(Long playerId, Long applicationId) {
+    public void approveApplication(Long organizerId, Long applicationId) {
         log.info("approveApplication - service");
 
-        if (!playerRepository.existsById(playerId)) {
-            throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
+        if (!organizerRepository.existsById(organizerId)) {
+            throw new CustomException(ErrorCode.ORGANIZER_NOT_FOUND);
         }
 
         Optional<Application> application = applicationRepository.findById(applicationId);
         if (application.isEmpty()) {
             throw new CustomException(ErrorCode.APPLICATION_NOT_FOUND);
+        }
+
+        Optional<Tournament> tournament = tournamentRepository.findById(application.get().getTournamentId());
+        if (tournament.isPresent()) {
+            if (!tournament.get().getOrganizerId().equals(organizerId)) {
+                throw new CustomException(ErrorCode.ORGANIZER_ONLY_ALLOWED);
+            }
         }
 
         application.get().approveApplication();
     }
 
     @Transactional
-    public void rejectApplication(Long playerId, Long applicationId) {
+    public void rejectApplication(Long organizerId, Long applicationId) {
         log.info("rejectApplication - service");
 
-        if (!playerRepository.existsById(playerId)) {
-            throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
+        if (!organizerRepository.existsById(organizerId)) {
+            throw new CustomException(ErrorCode.ORGANIZER_NOT_FOUND);
         }
 
         Optional<Application> application = applicationRepository.findById(applicationId);
         if (application.isEmpty()) {
             throw new CustomException(ErrorCode.APPLICATION_NOT_FOUND);
+        }
+
+        Optional<Tournament> tournament = tournamentRepository.findById(application.get().getTournamentId());
+        if (tournament.isPresent()) {
+            if (!tournament.get().getOrganizerId().equals(organizerId)) {
+                throw new CustomException(ErrorCode.ORGANIZER_ONLY_ALLOWED);
+            }
         }
 
         application.get().rejectApplication();
@@ -94,6 +108,10 @@ public class ApplicationService {
         Optional<Application> application = applicationRepository.findById(applicationId);
         if (application.isEmpty()) {
             throw new CustomException(ErrorCode.APPLICATION_NOT_FOUND);
+        }
+
+        if (!application.get().getPlayerId().equals(playerId)) {
+            throw new CustomException(ErrorCode.PLAYER_ONLY_ALLOWED);
         }
 
         application.get().cancelApplication();
