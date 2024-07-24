@@ -10,6 +10,7 @@ import org.example.boxingarena.dto.DetailApplicationResponse;
 import org.example.boxingarena.exception.CustomException;
 import org.example.boxingarena.exception.ErrorCode;
 import org.example.boxingarena.repository.ApplicationRepository;
+import org.example.boxingarena.repository.OrganizerRepository;
 import org.example.boxingarena.repository.PlayerRepository;
 import org.example.boxingarena.repository.TournamentRepository;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 public class ApplicationService {
 
     private final PlayerRepository playerRepository;
+    private final OrganizerRepository organizerRepository;
     private final TournamentRepository tournamentRepository;
     private final ApplicationRepository applicationRepository;
 
@@ -98,7 +100,19 @@ public class ApplicationService {
     }
 
     @Transactional(readOnly = true)
-    public List<DetailApplicationResponse> getMyApplication(Long playerId) {
+    public DetailApplicationResponse getApplication(Long applicationId) {
+        log.info("getApplication - service");
+
+        Optional<Application> application = applicationRepository.findById(applicationId);
+        if (application.isEmpty()) {
+            throw new CustomException(ErrorCode.APPLICATION_NOT_FOUND);
+        }
+
+        return DetailApplicationResponse.from(application.get());
+    }
+
+    @Transactional(readOnly = true)
+    public List<DetailApplicationResponse> getApplicationsByPlayer(Long playerId) {
         log.info("getMyApplication - service");
 
         if (!playerRepository.existsById(playerId)) {
@@ -110,6 +124,24 @@ public class ApplicationService {
                 .map(DetailApplicationResponse::from)
                 .collect(Collectors.toList());
 
+    }
+
+    @Transactional(readOnly = true)
+    public List<DetailApplicationResponse> getApplicationsForTournament(Long organizerId, Long tournamentId) {
+        log.info("getApplicationsForTournament - service");
+
+        if (!organizerRepository.existsById(organizerId)) {
+            throw new CustomException(ErrorCode.ORGANIZER_NOT_FOUND);
+        }
+
+        if (!tournamentRepository.existsById(tournamentId)) {
+            throw new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND);
+        }
+
+        return applicationRepository.findAllByTournamentId(tournamentId)
+                .stream()
+                .map(DetailApplicationResponse::from)
+                .collect(Collectors.toList());
     }
 
 }

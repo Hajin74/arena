@@ -31,7 +31,7 @@ public class ApplicationController {
         }
     }
 
-    @PatchMapping("/{applicationId}")
+    @PatchMapping("/{applicationId}/approve")
     public void approveApplication(Long playerId, @PathVariable Long applicationId) {
         log.info("approveApplication - api");
 
@@ -42,7 +42,7 @@ public class ApplicationController {
         }
     }
 
-    @PatchMapping("/{applicationId}")
+    @PatchMapping("/{applicationId}/reject")
     public void rejectApplication(Long playerId, @PathVariable Long applicationId) {
         log.info("rejectApplication - api");
 
@@ -53,7 +53,7 @@ public class ApplicationController {
         }
     }
 
-    @PatchMapping("/{applicationId}")
+    @PatchMapping("/{applicationId}/cancel")
     public void cancelApplication(Long playerId, @PathVariable Long applicationId) {
         log.info("cancelApplication - api");
 
@@ -64,12 +64,34 @@ public class ApplicationController {
         }
     }
 
-    @GetMapping
-    public List<DetailApplicationResponse> getMyApplication(Long playerId) {
-        log.info("getMyApplication - api");
+    @GetMapping("/{applicationId}")
+    public DetailApplicationResponse getApplication(@PathVariable Long applicationId) {
+        log.info("getApplication - api");
 
         try {
-            return applicationService.getMyApplication(playerId);
+            return applicationService.getApplication(applicationId);
+        } catch (CustomException exception) {
+            return null;
+        }
+    }
+
+    @GetMapping
+    public List<DetailApplicationResponse> getApplicationsByPlayer(Long playerId) {
+        log.info("getApplicationsByPlayer - api");
+
+        try {
+            return applicationService.getApplicationsByPlayer(playerId);
+        } catch (CustomException exception) {
+            return null;
+        }
+    }
+
+    @GetMapping("/tournament/{tournamentId}")
+    public List<DetailApplicationResponse> getApplicationsForTournament(Long organizerId, @PathVariable Long tournamentId) {
+        log.info("getApplicationsForTournament - api");
+
+        try {
+            return applicationService.getApplicationsForTournament(organizerId, tournamentId);
         } catch (CustomException exception) {
             return null;
         }

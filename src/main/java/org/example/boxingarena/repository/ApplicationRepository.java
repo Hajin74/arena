@@ -10,4 +10,6 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
 
     List<Application> findAllByPlayerId(Long playerId);
 
+    List<Application> findAllByTournamentId(Long tournamentId);
+
 }
