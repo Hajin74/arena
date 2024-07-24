@@ -24,6 +24,4 @@ public class Player {
 
     private String gym;
 
-    private char sex;
-
 }

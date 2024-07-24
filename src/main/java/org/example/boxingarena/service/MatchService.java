@@ -2,10 +2,18 @@ package org.example.boxingarena.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.boxingarena.domain.Application;
+import org.example.boxingarena.domain.ApplicationStatus;
 import org.example.boxingarena.domain.Match;
+import org.example.boxingarena.domain.MatchStatus;
+import org.example.boxingarena.dto.MatchCreateRequest;
+import org.example.boxingarena.exception.CustomException;
+import org.example.boxingarena.exception.ErrorCode;
 import org.example.boxingarena.repository.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -13,40 +21,35 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MatchService {
 
-    private PlayerRepository playerRepository;
-    private TournamentRepository tournamentRepository;
-    private MatchRepository matchRepository;
+    private final PlayerRepository playerRepository;
+    private final OrganizerRepository organizerRepository;
+    private final TournamentRepository tournamentRepository;
+    private final MatchRepository matchRepository;
 
-    public void createMatch(Long tournamentId, short totalRoundsCount, Long redCornerPlayerId,
-                            Long blueCornerPlayerId, String judgeName) {
-        if (!tournamentRepository.existsById(tournamentId)) {
-            // todo : 예외처리
-            log.info("Invalid tournament ID: " + tournamentId);
+    @Transactional
+    public void registerMatch(Long organizerId, MatchCreateRequest request) {
+        log.info("registerMatch - service");
+
+        if (!organizerRepository.existsById(organizerId)) {
+            throw new CustomException(ErrorCode.ORGANIZER_NOT_FOUND);
         }
 
-        if (!playerRepository.existsById(redCornerPlayerId)) {
-            // todo : 예외처리
-            log.info("Invalid redCornerPlayer ID: " + redCornerPlayerId);
+        if (!tournamentRepository.existsById(request.getTournamentId())) {
+            throw new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND);
         }
 
-        if (!playerRepository.existsById(blueCornerPlayerId)) {
-            // todo : 예외처리
-            log.info("Invalid blueCornerPlayer ID: " + blueCornerPlayerId);
-        }
-
-        Match scheduledMath = new Match(tournamentId, totalRoundsCount, redCornerPlayerId, blueCornerPlayerId, judgeName);
-        matchRepository.save(scheduledMath);
+        Match scheduledMatch = new Match(request.getTournamentId(), request.getRedCornerPlayerId(),
+                request.getBlueCornerPlayerId(), request.getJudgeName());
+        matchRepository.save(scheduledMatch);
     }
 
     public List<Match> getMatch(Long tournamentId, Long playerId) {
         if (!tournamentRepository.existsById(tournamentId)) {
-            // todo : 예외처리
-            log.info("Invalid tournament ID: " + tournamentId);
+            throw new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND);
         }
 
         if (!playerRepository.existsById(playerId)) {
-            // todo : 예외처리
-            log.info("Invalid player ID: " + playerId);
+            throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
         }
 
         return matchRepository.findAllByTournamentIdAndRedCornerPlayerIdOrBlueCornerPlayerId(tournamentId, playerId, playerId);

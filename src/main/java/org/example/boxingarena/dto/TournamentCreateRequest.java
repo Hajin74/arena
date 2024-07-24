@@ -20,4 +20,8 @@ public class TournamentCreateRequest {
 
     private LocalDate endDate;
 
+    private short totalRoundsCount;
+
+    private Long organizerId;
+
 }

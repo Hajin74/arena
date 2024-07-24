@@ -31,7 +31,7 @@ public class TournamentService {
         }
 
         Tournament newTournament = new Tournament(request.getName(), request.getLocation(),
-                request.getStartDate(), request.getEndDate(), organizerId);
+                request.getStartDate(), request.getEndDate(), request.getTotalRoundsCount(), request.getOrganizerId());
         tournamentRepository.save(newTournament);
     }
 

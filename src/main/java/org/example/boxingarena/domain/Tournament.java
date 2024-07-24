@@ -23,16 +23,19 @@ public class Tournament {
 
     private LocalDate endDate;
 
+    private short totalRoundsCount;
+
     @Enumerated(EnumType.STRING)
     private TournamentStatus status;
 
     private Long organizerId;
 
-    public Tournament(String name, String location, LocalDate startDate, LocalDate endDate, Long organizerId) {
+    public Tournament(String name, String location, LocalDate startDate, LocalDate endDate, short totalRoundsCount, Long organizerId) {
         this.name = name;
         this.location = location;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.totalRoundsCount = totalRoundsCount;
         this.organizerId = organizerId;
         this.status = TournamentStatus.SCHEDULED;
     }

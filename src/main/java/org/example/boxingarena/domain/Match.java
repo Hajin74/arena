@@ -16,8 +16,6 @@ public class Match {
 
     private Long tournamentId;
 
-    private short totalRoundsCount;
-
     private Long redCornerPlayerId;
 
     private Long blueCornerPlayerId;
@@ -27,18 +25,13 @@ public class Match {
     @Enumerated(EnumType.STRING)
     private MatchStatus status;
 
-    public Match(Long tournamentId, short totalRoundsCount, Long redCornerPlayerId,
+    public Match(Long tournamentId, Long redCornerPlayerId,
                  Long blueCornerPlayerId, String judgeName) {
         this.tournamentId = tournamentId;
-        this.totalRoundsCount = totalRoundsCount;
         this.redCornerPlayerId = redCornerPlayerId;
         this.blueCornerPlayerId = blueCornerPlayerId;
         this.judgeName = judgeName;
         this.status = MatchStatus.SCHEDULED;
-    }
-
-    public void startMatch() {
-        this.status = MatchStatus.ONGOING;
     }
 
     public void closeMatch() {

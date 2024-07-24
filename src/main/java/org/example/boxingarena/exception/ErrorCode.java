@@ -9,6 +9,7 @@ public enum ErrorCode {
 
     PLAYER_NOT_FOUND("선수를 찾을 수 없습니다."),
     PLAYER_ONLY_ALLOWED("선수 본인만 허용되는 작업입니다."),
+    PLAYERS_NOT_ENOUGH("선수가 충분하지 않습니다."),
     ORGANIZER_NOT_FOUND("개최자를 찾을 수 없습니다."),
     ORGANIZER_ONLY_ALLOWED("개최자만 허용되는 작업입니다."),
     TOURNAMENT_NOT_FOUND("대회를 찾을 수 없습니다."),
