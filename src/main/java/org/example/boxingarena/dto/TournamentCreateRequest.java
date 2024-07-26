@@ -24,4 +24,6 @@ public class TournamentCreateRequest {
 
     private String posterImgUrl;
 
+    private String intro;
+
 }

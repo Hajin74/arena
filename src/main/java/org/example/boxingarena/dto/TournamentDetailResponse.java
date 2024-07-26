@@ -19,6 +19,7 @@ public class TournamentDetailResponse {
     private LocalDate startDate;
     private LocalDate endDate;
     private String posterImgUrl;
+    private String intro;
     private short totalRoundsCount;
     private TournamentStatus tournamentStatus;
     private Long organizerId;
@@ -31,6 +32,7 @@ public class TournamentDetailResponse {
                 .startDate(tournament.getStartDate())
                 .endDate(tournament.getEndDate())
                 .posterImgUrl(tournament.getPosterImgUrl())
+                .intro(tournament.getIntro())
                 .totalRoundsCount(tournament.getTotalRoundsCount())
                 .tournamentStatus(tournament.getStatus())
                 .organizerId(tournament.getOrganizerId())

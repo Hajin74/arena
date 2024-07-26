@@ -24,4 +24,11 @@ public class Player {
 
     private String gym;
 
+    public Player(String name, String email, String password, String gym) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.gym = gym;
+    }
+
 }

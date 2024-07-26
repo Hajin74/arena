@@ -27,6 +27,8 @@ public class Tournament {
 
     private short totalRoundsCount;
 
+    private String intro;
+
     @Enumerated(EnumType.STRING)
     private TournamentStatus status;
 

@@ -7,5 +7,7 @@ import java.util.Optional;
 
 public interface PlayerRepository extends JpaRepository<Player, Long> {
     boolean existsById(Long id);
+
+    boolean existsByEmail(String email);
     Optional<Player> findById(Long id);
 }
