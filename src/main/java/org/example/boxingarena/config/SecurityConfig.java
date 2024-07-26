@@ -1,6 +1,7 @@
 package org.example.boxingarena.config;
 
 import org.example.boxingarena.auth.CustomLoginFilter;
+import org.example.boxingarena.auth.CustomLogoutFilter;
 import org.example.boxingarena.auth.JwtFilter;
 import org.example.boxingarena.auth.JwtUtil;
 import org.example.boxingarena.repository.RefreshJpaRepository;
@@ -62,7 +63,8 @@ public class SecurityConfig {
         // 필터 등록
         http
                 .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAt(new CustomLoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new CustomLoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
 
         return http.build();
     }
