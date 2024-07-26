@@ -23,6 +23,8 @@ public class Tournament {
 
     private LocalDate endDate;
 
+    private String posterImgUrl;
+
     private short totalRoundsCount;
 
     @Enumerated(EnumType.STRING)
@@ -30,11 +32,12 @@ public class Tournament {
 
     private Long organizerId;
 
-    public Tournament(String name, String location, LocalDate startDate, LocalDate endDate, short totalRoundsCount, Long organizerId) {
+    public Tournament(String name, String location, LocalDate startDate, LocalDate endDate, String posterImgUrl, short totalRoundsCount, Long organizerId) {
         this.name = name;
         this.location = location;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.posterImgUrl = posterImgUrl;
         this.totalRoundsCount = totalRoundsCount;
         this.organizerId = organizerId;
         this.status = TournamentStatus.SCHEDULED;

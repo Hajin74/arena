@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.boxingarena.domain.Tournament;
 import org.example.boxingarena.dto.DetailTournamentResponse;
 import org.example.boxingarena.dto.TournamentCreateRequest;
+import org.example.boxingarena.dto.TournamentSummaryResponse;
 import org.example.boxingarena.exception.CustomException;
 import org.example.boxingarena.exception.ErrorCode;
 import org.example.boxingarena.repository.OrganizerRepository;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -31,8 +34,17 @@ public class TournamentService {
         }
 
         Tournament newTournament = new Tournament(request.getName(), request.getLocation(),
-                request.getStartDate(), request.getEndDate(), request.getTotalRoundsCount(), organizerId);
+                request.getStartDate(), request.getEndDate(), request.getPosterImgUrl(),  request.getTotalRoundsCount(), organizerId);
         tournamentRepository.save(newTournament);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TournamentSummaryResponse> getAllTournament() {
+        log.info("getAllTournament -  service");
+
+        return tournamentRepository.findAll().stream()
+                .map(TournamentSummaryResponse::from)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
