@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.boxingarena.dto.DetailTournamentResponse;
 import org.example.boxingarena.dto.TournamentCreateRequest;
+import org.example.boxingarena.dto.TournamentDetailResponse;
 import org.example.boxingarena.dto.TournamentSummaryResponse;
 import org.example.boxingarena.exception.CustomException;
 import org.example.boxingarena.service.TournamentService;
@@ -44,7 +45,7 @@ public class TournamentController {
     }
 
     @GetMapping("/{tournamentId}")
-    public DetailTournamentResponse getDetailTournament(@PathVariable Long tournamentId) {
+    public TournamentDetailResponse getDetailTournament(@PathVariable Long tournamentId) {
         log.info("getDetailTournament - api");
 
         try {

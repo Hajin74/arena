@@ -13,12 +13,14 @@ public class TournamentSummaryResponse {
 
     private Long tournamentId;
     private String name;
+    private String posterImgUrl;
     private TournamentStatus tournamentStatus;
 
     public static TournamentSummaryResponse from(Tournament tournament) {
         return TournamentSummaryResponse.builder()
                 .tournamentId(tournament.getId())
                 .name(tournament.getName())
+                .posterImgUrl(tournament.getPosterImgUrl())
                 .tournamentStatus(tournament.getStatus())
                 .build();
     }

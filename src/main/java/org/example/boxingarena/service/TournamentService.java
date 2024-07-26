@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.boxingarena.domain.Tournament;
 import org.example.boxingarena.dto.DetailTournamentResponse;
 import org.example.boxingarena.dto.TournamentCreateRequest;
+import org.example.boxingarena.dto.TournamentDetailResponse;
 import org.example.boxingarena.dto.TournamentSummaryResponse;
 import org.example.boxingarena.exception.CustomException;
 import org.example.boxingarena.exception.ErrorCode;
@@ -48,11 +49,11 @@ public class TournamentService {
     }
 
     @Transactional(readOnly = true)
-    public DetailTournamentResponse getDetailTournament(Long tournamentId) {
+    public TournamentDetailResponse getDetailTournament(Long tournamentId) {
         Tournament detailTournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND));
 
-        return DetailTournamentResponse.from(detailTournament);
+        return TournamentDetailResponse.from(detailTournament);
     }
 
 }
