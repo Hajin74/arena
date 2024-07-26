@@ -64,11 +64,6 @@ public class CustomLoginFilter extends AbstractAuthenticationProcessingFilter {
         log.info("successfulAuthentication - execute!");
 
         String email = authentication.getName();
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
-        String role = auth.getAuthority();
-
 
         String access = jwtUtil.createJwt("access", email, 60000L);
         String refresh = jwtUtil.createJwt("refresh", email, 86400000L);
