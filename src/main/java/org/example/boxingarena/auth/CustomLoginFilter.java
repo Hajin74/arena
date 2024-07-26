@@ -70,8 +70,8 @@ public class CustomLoginFilter extends AbstractAuthenticationProcessingFilter {
         String role = auth.getAuthority();
 
 
-        String access = jwtUtil.createJwt("access", email, role, 60000L);
-        String refresh = jwtUtil.createJwt("refresh", email, role, 86400000L);
+        String access = jwtUtil.createJwt("access", email, 60000L);
+        String refresh = jwtUtil.createJwt("refresh", email, 86400000L);
 
         addRefresh(email, refresh, 86400000L);
 

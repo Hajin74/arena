@@ -1,6 +1,7 @@
 package org.example.boxingarena.config;
 
 import org.example.boxingarena.auth.CustomLoginFilter;
+import org.example.boxingarena.auth.JwtUtil;
 import org.example.boxingarena.repository.RefreshJpaRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,7 +60,7 @@ public class SecurityConfig {
 
         // 필터 등록
         http
-                .addFilterAt(new CustomLoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAt(new CustomLoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
