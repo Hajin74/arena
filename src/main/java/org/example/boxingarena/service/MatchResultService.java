@@ -21,8 +21,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MatchResultService {
 
-    private final PlayerRepository playerRepository;
-    private final OrganizerRepository organizerRepository;
+    private final UserRepository userRepository;
     private final TournamentRepository tournamentRepository;
     private final MatchRepository matchRepository;
     private final MatchResultRepository matchResultRepository;
@@ -31,7 +30,7 @@ public class MatchResultService {
     public void recordMatchScore(Long organizerId, MatchResultCreateRequest request) {
         log.info("recordMatchScore - service");
 
-        if (!organizerRepository.existsById(organizerId)) {
+        if (!userRepository.existsById(organizerId)) {
             throw new CustomException(ErrorCode.ORGANIZER_NOT_FOUND);
         }
 
@@ -44,7 +43,7 @@ public class MatchResultService {
             throw new CustomException(ErrorCode.MATCH_NOT_FOUND);
         }
 
-        if (!playerRepository.existsById(request.getWinnerId())) {
+        if (!userRepository.existsById(request.getWinnerId())) {
             throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
         }
 

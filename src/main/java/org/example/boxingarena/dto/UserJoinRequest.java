@@ -5,11 +5,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PlayerJoinRequest {
+public class UserJoinRequest {
 
-    private String playerName;
+    private String name;
     private String email;
     private String password;
-    private String gym;
+    private String phoneNumber;
+    private String userRole;
 
 }

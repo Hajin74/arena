@@ -12,6 +12,7 @@ import org.example.boxingarena.repository.RefreshJpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
@@ -19,6 +20,7 @@ import java.util.Date;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/auth")
 public class AuthController {
 
     private final JwtUtil jwtUtil;
@@ -56,9 +58,10 @@ public class AuthController {
         }
 
         String email = jwtUtil.getEmail(refresh);
+        String role = jwtUtil.getRole(refresh);
 
-        String newAccess = jwtUtil.createJwt("access", email,  600000L);
-        String newRefresh = jwtUtil.createJwt("refresh", email, 86400000L);
+        String newAccess = jwtUtil.createJwt("access", email,  role, 600000L);
+        String newRefresh = jwtUtil.createJwt("refresh", email, role, 86400000L);
 
         refreshRepository.deleteByToken(refresh);
         addRefresh(email, newRefresh, 86400000L);

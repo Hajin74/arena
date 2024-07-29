@@ -1,6 +1,7 @@
 package org.example.boxingarena.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,6 +21,7 @@ public class Application {
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
 
+    @Builder
     public Application(Long tournamentId, Long playerId) {
         this.tournamentId = tournamentId;
         this.playerId = playerId;

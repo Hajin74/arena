@@ -10,9 +10,8 @@ import org.example.boxingarena.dto.DetailApplicationResponse;
 import org.example.boxingarena.exception.CustomException;
 import org.example.boxingarena.exception.ErrorCode;
 import org.example.boxingarena.repository.ApplicationRepository;
-import org.example.boxingarena.repository.OrganizerRepository;
-import org.example.boxingarena.repository.PlayerRepository;
 import org.example.boxingarena.repository.TournamentRepository;
+import org.example.boxingarena.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,8 +24,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ApplicationService {
 
-    private final PlayerRepository playerRepository;
-    private final OrganizerRepository organizerRepository;
+    private final UserRepository userRepository;
     private final TournamentRepository tournamentRepository;
     private final ApplicationRepository applicationRepository;
 
@@ -39,7 +37,7 @@ public class ApplicationService {
             throw new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND);
         }
 
-        if (!playerRepository.existsById(playerId)) {
+        if (!userRepository.existsById(playerId)) {
             throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
         }
 
@@ -55,7 +53,7 @@ public class ApplicationService {
     public void approveApplication(Long organizerId, Long applicationId) {
         log.info("approveApplication - service");
 
-        if (!organizerRepository.existsById(organizerId)) {
+        if (!userRepository.existsById(organizerId)) {
             throw new CustomException(ErrorCode.ORGANIZER_NOT_FOUND);
         }
 
@@ -78,7 +76,7 @@ public class ApplicationService {
     public void rejectApplication(Long organizerId, Long applicationId) {
         log.info("rejectApplication - service");
 
-        if (!organizerRepository.existsById(organizerId)) {
+        if (!userRepository.existsById(organizerId)) {
             throw new CustomException(ErrorCode.ORGANIZER_NOT_FOUND);
         }
 
@@ -101,7 +99,7 @@ public class ApplicationService {
     public void cancelApplication(Long playerId, Long applicationId) {
         log.info("cancelApplication - service");
 
-        if (!playerRepository.existsById(playerId)) {
+        if (!userRepository.existsById(playerId)) {
             throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
         }
 
@@ -133,7 +131,7 @@ public class ApplicationService {
     public List<DetailApplicationResponse> getApplicationsByPlayer(Long playerId) {
         log.info("getMyApplication - service");
 
-        if (!playerRepository.existsById(playerId)) {
+        if (!userRepository.existsById(playerId)) {
             throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
         }
 
@@ -148,7 +146,7 @@ public class ApplicationService {
     public List<DetailApplicationResponse> getApplicationsForTournament(Long organizerId, Long tournamentId) {
         log.info("getApplicationsForTournament - service");
 
-        if (!organizerRepository.existsById(organizerId)) {
+        if (!userRepository.existsById(organizerId)) {
             throw new CustomException(ErrorCode.ORGANIZER_NOT_FOUND);
         }
 

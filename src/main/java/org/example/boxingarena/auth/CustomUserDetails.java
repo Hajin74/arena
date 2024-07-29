@@ -2,32 +2,35 @@ package org.example.boxingarena.auth;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.boxingarena.domain.Player;
+import org.example.boxingarena.domain.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 @Slf4j
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
-    private final Player player;
+    private final User user;
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        Collection<GrantedAuthority> collection = new ArrayList<>();
+        collection.add((GrantedAuthority) user::getRole);
+        return collection;
     }
 
     @Override
     public String getPassword() {
-        return player.getPassword();
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return player.getEmail();
+        return user.getEmail();
     }
 
     @Override

@@ -2,10 +2,10 @@ package org.example.boxingarena.auth;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.boxingarena.domain.Player;
+import org.example.boxingarena.domain.User;
 import org.example.boxingarena.exception.CustomException;
 import org.example.boxingarena.exception.ErrorCode;
-import org.example.boxingarena.repository.PlayerRepository;
+import org.example.boxingarena.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,14 +16,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final PlayerRepository playerRepository;
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Player player = playerRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.PLAYER_NOT_FOUND));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        return new CustomUserDetails(player);
+        return new CustomUserDetails(user);
     }
 
 }

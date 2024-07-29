@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.example.boxingarena.domain.Refresh;
-import org.example.boxingarena.dto.PlayerLoginRequest;
+import org.example.boxingarena.dto.LoginRequest;
 import org.example.boxingarena.repository.RefreshJpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,7 +33,7 @@ public class CustomLoginFilter extends AbstractAuthenticationProcessingFilter {
     private RefreshJpaRepository refreshRepository;
 
     public CustomLoginFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil, RefreshJpaRepository refreshRepository) {
-        super(new AntPathRequestMatcher("/login", "POST"));
+        super(new AntPathRequestMatcher("/api/user/login", "POST"));
         setAuthenticationManager(authenticationManager);
 
         this.jwtUtil = jwtUtil;
@@ -47,10 +47,10 @@ public class CustomLoginFilter extends AbstractAuthenticationProcessingFilter {
         ObjectMapper objectMapper = new ObjectMapper();
         String messageBody = StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8);
         log.info("messageBody : {}", messageBody);
-        PlayerLoginRequest playerLoginRequest = objectMapper.readValue(messageBody, PlayerLoginRequest.class);
+        LoginRequest loginRequest = objectMapper.readValue(messageBody, LoginRequest.class);
 
-        String email = playerLoginRequest.getEmail();
-        String password = playerLoginRequest.getPassword();
+        String email = loginRequest.getEmail();
+        String password = loginRequest.getPassword();
 
         log.info("attemptAuthentication - email: {}, password: {}", email, password);
 
@@ -64,9 +64,13 @@ public class CustomLoginFilter extends AbstractAuthenticationProcessingFilter {
         log.info("successfulAuthentication - execute!");
 
         String email = authentication.getName();
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
+        GrantedAuthority auth = iterator.next();
+        String role = auth.getAuthority();
 
-        String access = jwtUtil.createJwt("access", email, 60000L);
-        String refresh = jwtUtil.createJwt("refresh", email, 86400000L);
+        String access = jwtUtil.createJwt("access", email, role, 60000L);
+        String refresh = jwtUtil.createJwt("refresh", email, role, 86400000L);
 
         addRefresh(email, refresh, 86400000L);
 

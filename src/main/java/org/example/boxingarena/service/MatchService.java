@@ -21,8 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MatchService {
 
-    private final PlayerRepository playerRepository;
-    private final OrganizerRepository organizerRepository;
+    private final UserRepository userRepository;
     private final TournamentRepository tournamentRepository;
     private final MatchRepository matchRepository;
 
@@ -30,7 +29,7 @@ public class MatchService {
     public void registerMatch(Long organizerId, MatchCreateRequest request) {
         log.info("registerMatch - service");
 
-        if (!organizerRepository.existsById(organizerId)) {
+        if (!userRepository.existsById(organizerId)) {
             throw new CustomException(ErrorCode.ORGANIZER_NOT_FOUND);
         }
 
@@ -38,11 +37,11 @@ public class MatchService {
             throw new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND);
         }
 
-        if (!playerRepository.existsById(request.getRedCornerPlayerId())) {
+        if (!userRepository.existsById(request.getRedCornerPlayerId())) {
             throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
         }
 
-        if (!playerRepository.existsById(request.getBlueCornerPlayerId())) {
+        if (!userRepository.existsById(request.getBlueCornerPlayerId())) {
             throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
         }
 
@@ -56,7 +55,7 @@ public class MatchService {
             throw new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND);
         }
 
-        if (!playerRepository.existsById(playerId)) {
+        if (!userRepository.existsById(playerId)) {
             throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
         }
 

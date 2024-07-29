@@ -1,6 +1,7 @@
 package org.example.boxingarena.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -34,7 +35,8 @@ public class Tournament {
 
     private Long organizerId;
 
-    public Tournament(String name, String location, LocalDate startDate, LocalDate endDate, String posterImgUrl, short totalRoundsCount, Long organizerId) {
+    @Builder
+    public Tournament(String name, String location, LocalDate startDate, LocalDate endDate, String posterImgUrl, short totalRoundsCount, String intro, Long organizerId) {
         this.name = name;
         this.location = location;
         this.startDate = startDate;

@@ -1,13 +1,13 @@
 package org.example.boxingarena.repository;
 
-import org.example.boxingarena.domain.Player;
+import org.example.boxingarena.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface PlayerRepository extends JpaRepository<Player, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsById(Long id);
-    Optional<Player> findByEmail(String email);
+    Optional<User> findByEmail(String email);
     boolean existsByEmail(String email);
-    Optional<Player> findById(Long id);
+    Optional<User> findById(Long id);
 }
