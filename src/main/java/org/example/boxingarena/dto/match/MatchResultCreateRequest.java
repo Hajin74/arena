@@ -1,4 +1,4 @@
-package org.example.boxingarena.dto;
+package org.example.boxingarena.dto.match;
 
 import lombok.Getter;
 import lombok.Setter;

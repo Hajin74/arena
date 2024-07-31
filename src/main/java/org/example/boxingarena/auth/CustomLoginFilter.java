@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.example.boxingarena.domain.Refresh;
-import org.example.boxingarena.dto.LoginRequest;
+import org.example.boxingarena.dto.user.LoginRequest;
 import org.example.boxingarena.repository.RefreshJpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -69,7 +69,7 @@ public class CustomLoginFilter extends AbstractAuthenticationProcessingFilter {
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        String access = jwtUtil.createJwt("access", email, role, 60000L);
+        String access = jwtUtil.createJwt("access", email, role, 600000L);
         String refresh = jwtUtil.createJwt("refresh", email, role, 86400000L);
 
         addRefresh(email, refresh, 86400000L);

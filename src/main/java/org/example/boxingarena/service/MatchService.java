@@ -2,18 +2,14 @@ package org.example.boxingarena.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.boxingarena.domain.Application;
-import org.example.boxingarena.domain.ApplicationStatus;
 import org.example.boxingarena.domain.Match;
-import org.example.boxingarena.domain.MatchStatus;
-import org.example.boxingarena.dto.MatchCreateRequest;
+import org.example.boxingarena.dto.match.MatchCreateRequest;
 import org.example.boxingarena.exception.CustomException;
 import org.example.boxingarena.exception.ErrorCode;
 import org.example.boxingarena.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 
 @Slf4j

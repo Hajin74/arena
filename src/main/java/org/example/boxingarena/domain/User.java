@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.boxingarena.dto.user.UserUpdateRequest;
 
 @Entity
 @Table(name="users")
@@ -36,6 +37,11 @@ public class User {
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.role = role;
+    }
+
+    public void updateUser(UserUpdateRequest request) {
+        this.name = request.getName();
+        this.phoneNumber = request.getPhoneNumber();
     }
 
 }

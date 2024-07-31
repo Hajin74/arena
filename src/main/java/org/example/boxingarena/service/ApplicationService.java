@@ -2,11 +2,13 @@ package org.example.boxingarena.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.boxingarena.auth.CustomUserDetails;
 import org.example.boxingarena.domain.Application;
 import org.example.boxingarena.domain.Tournament;
 import org.example.boxingarena.domain.TournamentStatus;
-import org.example.boxingarena.dto.ApplicationFormRequest;
-import org.example.boxingarena.dto.DetailApplicationResponse;
+import org.example.boxingarena.domain.User;
+import org.example.boxingarena.dto.application.ApplicationFormRequest;
+import org.example.boxingarena.dto.application.DetailApplicationResponse;
 import org.example.boxingarena.exception.CustomException;
 import org.example.boxingarena.exception.ErrorCode;
 import org.example.boxingarena.repository.ApplicationRepository;
@@ -15,6 +17,7 @@ import org.example.boxingarena.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,70 +32,65 @@ public class ApplicationService {
     private final ApplicationRepository applicationRepository;
 
     @Transactional
-    public void applyForTournament(Long playerId, ApplicationFormRequest request) {
+    public void applyForTournament(CustomUserDetails customUserDetails, ApplicationFormRequest request) {
         log.info("applyForTournament - service");
 
-        Optional<Tournament> tournament = tournamentRepository.findById(request.getTournamentId());
-        if (tournament.isEmpty()) {
-            throw new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND);
-        }
+        User player = userRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new CustomException(ErrorCode.PLAYER_NOT_FOUND));
 
-        if (!userRepository.existsById(playerId)) {
-            throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
-        }
+        Tournament tournament = tournamentRepository.findById(request.getTournamentId())
+                .orElseThrow(() -> new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND));
 
-        if (!tournament.get().getStatus().equals(TournamentStatus.APPLICATION_OPENING)) {
+        if (!tournament.getStatus().equals(TournamentStatus.APPLICATION_OPENING)) {
             throw new CustomException(ErrorCode.APPLICATION_FOR_TOURNAMENT_PERIOD_CLOSED);
         }
 
-        Application newApplication = new Application(request.getTournamentId(), playerId);
+        Application newApplication = new Application(request.getTournamentId(), player.getId());
         applicationRepository.save(newApplication);
     }
 
     @Transactional
-    public void approveApplication(Long organizerId, Long applicationId) {
+    public void approveApplication(CustomUserDetails customUserDetails, Long applicationId) {
         log.info("approveApplication - service");
 
-        if (!userRepository.existsById(organizerId)) {
-            throw new CustomException(ErrorCode.ORGANIZER_NOT_FOUND);
-        }
+        User organizer = userRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new CustomException(ErrorCode.ORGANIZER_NOT_FOUND));
 
-        Optional<Application> application = applicationRepository.findById(applicationId);
-        if (application.isEmpty()) {
-            throw new CustomException(ErrorCode.APPLICATION_NOT_FOUND);
-        }
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new CustomException(ErrorCode.APPLICATION_NOT_FOUND));
 
-        Optional<Tournament> tournament = tournamentRepository.findById(application.get().getTournamentId());
-        if (tournament.isPresent()) {
-            if (!tournament.get().getOrganizerId().equals(organizerId)) {
+        Tournament tournament = tournamentRepository.findById(application.getTournamentId())
+                .orElseThrow(() -> new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND));
+
+        if (tournament != null) {
+            if (!tournament.getOrganizerId().equals(organizer.getId())) {
                 throw new CustomException(ErrorCode.ORGANIZER_ONLY_ALLOWED);
             }
         }
 
-        application.get().approveApplication();
+        application.approveApplication();
     }
 
     @Transactional
-    public void rejectApplication(Long organizerId, Long applicationId) {
+    public void rejectApplication(CustomUserDetails customUserDetails, Long applicationId) {
         log.info("rejectApplication - service");
 
-        if (!userRepository.existsById(organizerId)) {
-            throw new CustomException(ErrorCode.ORGANIZER_NOT_FOUND);
-        }
+        User organizer = userRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new CustomException(ErrorCode.ORGANIZER_NOT_FOUND));
 
-        Optional<Application> application = applicationRepository.findById(applicationId);
-        if (application.isEmpty()) {
-            throw new CustomException(ErrorCode.APPLICATION_NOT_FOUND);
-        }
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new CustomException(ErrorCode.APPLICATION_NOT_FOUND));
 
-        Optional<Tournament> tournament = tournamentRepository.findById(application.get().getTournamentId());
-        if (tournament.isPresent()) {
-            if (!tournament.get().getOrganizerId().equals(organizerId)) {
+        Tournament tournament = tournamentRepository.findById(application.getTournamentId())
+                .orElseThrow(() -> new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND));
+
+        if (tournament != null) {
+            if (!tournament.getOrganizerId().equals(organizer.getId())) {
                 throw new CustomException(ErrorCode.ORGANIZER_ONLY_ALLOWED);
             }
         }
 
-        application.get().rejectApplication();
+        application.rejectApplication();
     }
 
     @Transactional
@@ -128,14 +126,17 @@ public class ApplicationService {
     }
 
     @Transactional(readOnly = true)
-    public List<DetailApplicationResponse> getApplicationsByPlayer(Long playerId) {
+    public List<DetailApplicationResponse> getApplicationsByPlayer(CustomUserDetails customUserDetails) {
         log.info("getMyApplication - service");
 
-        if (!userRepository.existsById(playerId)) {
+        User player = userRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new CustomException(ErrorCode.ORGANIZER_NOT_FOUND));
+
+        if (!userRepository.existsById(player.getId())) {
             throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
         }
 
-        return applicationRepository.findAllByPlayerId(playerId)
+        return applicationRepository.findAllByPlayerId(player.getId())
                 .stream()
                 .map(DetailApplicationResponse::from)
                 .collect(Collectors.toList());
@@ -143,21 +144,22 @@ public class ApplicationService {
     }
 
     @Transactional(readOnly = true)
-    public List<DetailApplicationResponse> getApplicationsForTournament(Long organizerId, Long tournamentId) {
+    public List<DetailApplicationResponse> getApplicationsForTournament(CustomUserDetails customUserDetails, Long tournamentId) {
         log.info("getApplicationsForTournament - service");
-
-        if (!userRepository.existsById(organizerId)) {
-            throw new CustomException(ErrorCode.ORGANIZER_NOT_FOUND);
-        }
 
         if (!tournamentRepository.existsById(tournamentId)) {
             throw new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND);
         }
 
-        return applicationRepository.findAllByTournamentId(tournamentId)
-                .stream()
-                .map(DetailApplicationResponse::from)
-                .collect(Collectors.toList());
+        List<DetailApplicationResponse> applicationResponses = new ArrayList<>();
+        List<Application> applications = applicationRepository.findAllByTournamentId(tournamentId);
+        for (Application application : applications) {
+            User player = userRepository.findById(application.getPlayerId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.PLAYER_NOT_FOUND));
+            applicationResponses.add(DetailApplicationResponse.from(application, player.getName()));
+        }
+
+        return applicationResponses;
     }
 
 }

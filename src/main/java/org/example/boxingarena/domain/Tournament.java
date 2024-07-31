@@ -4,12 +4,14 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDate;
 
 @Entity
 @Getter
 @NoArgsConstructor
+@ToString
 public class Tournament {
 
     @Id
@@ -26,7 +28,7 @@ public class Tournament {
 
     private String posterImgUrl;
 
-    private short totalRoundsCount;
+    private int totalRoundsCount;
 
     private String intro;
 
@@ -36,7 +38,7 @@ public class Tournament {
     private Long organizerId;
 
     @Builder
-    public Tournament(String name, String location, LocalDate startDate, LocalDate endDate, String posterImgUrl, short totalRoundsCount, String intro, Long organizerId) {
+    public Tournament(String name, String location, LocalDate startDate, LocalDate endDate, String posterImgUrl, int totalRoundsCount, String intro, Long organizerId) {
         this.name = name;
         this.location = location;
         this.startDate = startDate;
@@ -44,6 +46,7 @@ public class Tournament {
         this.posterImgUrl = posterImgUrl;
         this.totalRoundsCount = totalRoundsCount;
         this.organizerId = organizerId;
+        this.intro = intro;
         this.status = TournamentStatus.SCHEDULED;
     }
 

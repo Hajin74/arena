@@ -1,4 +1,4 @@
-package org.example.boxingarena.dto;
+package org.example.boxingarena.dto.tournament;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -20,11 +20,11 @@ public class TournamentDetailResponse {
     private LocalDate endDate;
     private String posterImgUrl;
     private String intro;
-    private short totalRoundsCount;
+    private int totalRoundsCount;
     private TournamentStatus tournamentStatus;
-    private Long organizerId;
+    private String organizerName;
 
-    public static TournamentDetailResponse from(Tournament tournament) {
+    public static TournamentDetailResponse from(Tournament tournament, String organizerName) {
         return TournamentDetailResponse.builder()
                 .tournamentId(tournament.getId())
                 .name(tournament.getName())
@@ -35,7 +35,7 @@ public class TournamentDetailResponse {
                 .intro(tournament.getIntro())
                 .totalRoundsCount(tournament.getTotalRoundsCount())
                 .tournamentStatus(tournament.getStatus())
-                .organizerId(tournament.getOrganizerId())
+                .organizerName(organizerName)
                 .build();
     }
 

@@ -2,10 +2,12 @@ package org.example.boxingarena.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.boxingarena.auth.CustomUserDetails;
 import org.example.boxingarena.domain.Tournament;
-import org.example.boxingarena.dto.TournamentCreateRequest;
-import org.example.boxingarena.dto.TournamentDetailResponse;
-import org.example.boxingarena.dto.TournamentSummaryResponse;
+import org.example.boxingarena.domain.User;
+import org.example.boxingarena.dto.tournament.TournamentCreateRequest;
+import org.example.boxingarena.dto.tournament.TournamentDetailResponse;
+import org.example.boxingarena.dto.tournament.TournamentSummaryResponse;
 import org.example.boxingarena.exception.CustomException;
 import org.example.boxingarena.exception.ErrorCode;
 import org.example.boxingarena.repository.TournamentRepository;
@@ -25,12 +27,11 @@ public class TournamentService {
     private final TournamentRepository tournamentRepository;
 
     @Transactional
-    public void createTournament(Long organizerId, TournamentCreateRequest request) {
+    public void createTournament(CustomUserDetails customUserDetails, TournamentCreateRequest request) {
         log.info("createTournament service");
 
-        if (!userRepository.existsById(organizerId)) {
-            throw new CustomException(ErrorCode.ORGANIZER_NOT_FOUND);
-        }
+        User organizer = userRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new CustomException(ErrorCode.ORGANIZER_NOT_FOUND));
 
         Tournament newTournament = Tournament.builder()
                 .name(request.getName())
@@ -40,8 +41,10 @@ public class TournamentService {
                 .posterImgUrl(request.getPosterImgUrl())
                 .totalRoundsCount(request.getTotalRoundsCount())
                 .intro(request.getIntro())
-                .organizerId(organizerId)
+                .organizerId(organizer.getId())
                 .build();
+
+        log.info("newTournament : " + newTournament.toString());
         tournamentRepository.save(newTournament);
     }
 
@@ -59,7 +62,23 @@ public class TournamentService {
         Tournament detailTournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND));
 
-        return TournamentDetailResponse.from(detailTournament);
+        User organizer = userRepository.findById(detailTournament.getOrganizerId())
+                .orElseThrow(() -> new CustomException(ErrorCode.ORGANIZER_NOT_FOUND));
+
+        return TournamentDetailResponse.from(detailTournament, organizer.getName());
+    }
+
+    @Transactional(readOnly = true)
+    public List<TournamentSummaryResponse> getTournamentsByOrganizer(CustomUserDetails customUserDetails) {
+        log.info("getTournamentsByOrganizer - service");
+
+        User organizer = userRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new CustomException(ErrorCode.ORGANIZER_NOT_FOUND));
+
+        return tournamentRepository.findAllByOrganizerId(organizer.getId())
+                .stream()
+                .map(TournamentSummaryResponse::from)
+                .collect(Collectors.toList());
     }
 
 }

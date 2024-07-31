@@ -1,4 +1,4 @@
-package org.example.boxingarena.dto;
+package org.example.boxingarena.dto.tournament;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -20,7 +20,7 @@ public class TournamentCreateRequest {
 
     private LocalDate endDate;
 
-    private short totalRoundsCount;
+    private int totalRoundsCount;
 
     private String posterImgUrl;
 

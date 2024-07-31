@@ -3,11 +3,12 @@ package org.example.boxingarena.ui;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.boxingarena.dto.ApplicationFormRequest;
-import org.example.boxingarena.dto.DetailApplicationResponse;
+import org.example.boxingarena.auth.CustomUserDetails;
+import org.example.boxingarena.dto.application.ApplicationFormRequest;
+import org.example.boxingarena.dto.application.DetailApplicationResponse;
 import org.example.boxingarena.exception.CustomException;
 import org.example.boxingarena.service.ApplicationService;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,33 +22,33 @@ public class ApplicationController {
     private final ApplicationService applicationService;
 
     @PostMapping
-    public void applyForTournament(Long playerId, @RequestBody @Valid ApplicationFormRequest request) {
+    public void applyForTournament(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody @Valid ApplicationFormRequest request) {
         log.info("applyForTournament - api");
 
         try {
-            applicationService.applyForTournament(playerId, request);
+            applicationService.applyForTournament(customUserDetails, request);
         } catch (CustomException exception) {
             log.info("applyForTournament - exception : " + exception.getMessage());
         }
     }
 
     @PatchMapping("/{applicationId}/approve")
-    public void approveApplication(Long organizerId, @PathVariable Long applicationId) {
+    public void approveApplication(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long applicationId) {
         log.info("approveApplication - api");
 
         try {
-            applicationService.approveApplication(organizerId, applicationId);
+            applicationService.approveApplication(customUserDetails, applicationId);
         } catch (CustomException exception) {
             log.info("approveApplication - exception : " + exception.getMessage());
         }
     }
 
     @PatchMapping("/{applicationId}/reject")
-    public void rejectApplication(Long playerId, @PathVariable Long applicationId) {
+    public void rejectApplication(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long applicationId) {
         log.info("rejectApplication - api");
 
         try {
-            applicationService.rejectApplication(playerId, applicationId);
+            applicationService.rejectApplication(customUserDetails, applicationId);
         } catch (CustomException exception) {
             return;
         }
@@ -71,27 +72,28 @@ public class ApplicationController {
         try {
             return applicationService.getApplication(applicationId);
         } catch (CustomException exception) {
+            log.info("getApplication - exception : " + exception.getMessage());
             return null;
         }
     }
 
-    @GetMapping
-    public List<DetailApplicationResponse> getApplicationsByPlayer(Long playerId) {
+    @GetMapping("/player")
+    public List<DetailApplicationResponse> getApplicationsByPlayer(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         log.info("getApplicationsByPlayer - api");
 
         try {
-            return applicationService.getApplicationsByPlayer(playerId);
+            return applicationService.getApplicationsByPlayer(customUserDetails);
         } catch (CustomException exception) {
             return null;
         }
     }
 
     @GetMapping("/tournament/{tournamentId}")
-    public List<DetailApplicationResponse> getApplicationsForTournament(Long organizerId, @PathVariable Long tournamentId) {
+    public List<DetailApplicationResponse> getApplicationsForTournament(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long tournamentId) {
         log.info("getApplicationsForTournament - api");
 
         try {
-            return applicationService.getApplicationsForTournament(organizerId, tournamentId);
+            return applicationService.getApplicationsForTournament(customUserDetails, tournamentId);
         } catch (CustomException exception) {
             return null;
         }
