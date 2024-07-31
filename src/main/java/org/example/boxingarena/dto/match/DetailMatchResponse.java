@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.boxingarena.domain.Match;
-import org.example.boxingarena.domain.MatchStatus;
+import org.example.boxingarena.domain.MatchType;
 
 @Getter
 @Setter
@@ -16,7 +16,7 @@ public class DetailMatchResponse {
     private Long redCornerPlayerId;
     private Long blueCornerPlayerId;
     private String judgeName;
-    private MatchStatus status;
+    private MatchType status;
 
     public static DetailMatchResponse from(Match match) {
         return DetailMatchResponse.builder()
@@ -25,7 +25,7 @@ public class DetailMatchResponse {
                 .redCornerPlayerId(match.getRedCornerPlayerId())
                 .blueCornerPlayerId(match.getBlueCornerPlayerId())
                 .judgeName(match.getJudgeName())
-                .status(MatchStatus.SCHEDULED)
+                .status(MatchType.SCHEDULED)
                 .build();
     }
 

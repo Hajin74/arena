@@ -1,6 +1,7 @@
 package org.example.boxingarena.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,22 +21,18 @@ public class Match {
 
     private Long blueCornerPlayerId;
 
-    private String judgeName;
+    private String groupId;
 
     @Enumerated(EnumType.STRING)
-    private MatchStatus status;
+    private MatchType type;
 
-    public Match(Long tournamentId, Long redCornerPlayerId,
-                 Long blueCornerPlayerId, String judgeName) {
+    @Builder
+    public Match(Long tournamentId, Long redCornerPlayerId, Long blueCornerPlayerId, String groupId, MatchType type) {
         this.tournamentId = tournamentId;
         this.redCornerPlayerId = redCornerPlayerId;
         this.blueCornerPlayerId = blueCornerPlayerId;
-        this.judgeName = judgeName;
-        this.status = MatchStatus.SCHEDULED;
-    }
-
-    public void closeMatch() {
-        this.status = MatchStatus.COMPLETED;
+        this.groupId = groupId;
+        this.type = MatchType.type;
     }
 
 }
