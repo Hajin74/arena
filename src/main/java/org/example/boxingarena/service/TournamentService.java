@@ -8,6 +8,7 @@ import org.example.boxingarena.domain.User;
 import org.example.boxingarena.dto.tournament.TournamentCreateRequest;
 import org.example.boxingarena.dto.tournament.TournamentDetailResponse;
 import org.example.boxingarena.dto.tournament.TournamentSummaryResponse;
+import org.example.boxingarena.dto.tournament.TournamentUpdateRequest;
 import org.example.boxingarena.exception.CustomException;
 import org.example.boxingarena.exception.ErrorCode;
 import org.example.boxingarena.repository.TournamentRepository;
@@ -135,6 +136,19 @@ public class TournamentService {
                 .orElseThrow(() -> new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND));
 
         tournament.endTournament();
+    }
+
+    @Transactional
+    public void updateTournamentInfo(CustomUserDetails customUserDetails, Long tournamentId, TournamentUpdateRequest request) {
+        log.info("endTournament - service : " + tournamentId);
+
+        User organizer = userRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new CustomException(ErrorCode.ORGANIZER_NOT_FOUND));
+
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND));
+
+        tournament.updateTournament(request);
     }
 
 }

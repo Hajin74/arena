@@ -7,6 +7,7 @@ import org.example.boxingarena.auth.CustomUserDetails;
 import org.example.boxingarena.dto.tournament.TournamentCreateRequest;
 import org.example.boxingarena.dto.tournament.TournamentDetailResponse;
 import org.example.boxingarena.dto.tournament.TournamentSummaryResponse;
+import org.example.boxingarena.dto.tournament.TournamentUpdateRequest;
 import org.example.boxingarena.exception.CustomException;
 import org.example.boxingarena.service.TournamentService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -113,6 +114,15 @@ public class TournamentController {
         }
     }
 
+    @PatchMapping("/{tournamentId}")
+    public void updateTournamentInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long tournamentId, @RequestBody @Valid TournamentUpdateRequest request) {
+        log.info("updateTournamentInfo - api : " + tournamentId);
 
+        try {
+            tournamentService.updateTournamentInfo(customUserDetails, tournamentId, request);
+        } catch (CustomException exception) {
+            log.info("updateTournamentInfo - exception : " + exception.getMessage());
+        }
+    }
 
 }

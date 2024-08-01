@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.example.boxingarena.dto.tournament.TournamentUpdateRequest;
 
 import java.time.LocalDate;
 
@@ -66,5 +67,13 @@ public class Tournament {
         this.status = TournamentStatus.COMPLETED;
     }
 
+    public void updateTournament(TournamentUpdateRequest request) {
+        this.name = request.getName();
+        this.location = request.getLocation();
+        this.startDate = request.getStartDate();
+        this.endDate = request.getEndDate();
+        this.posterImgUrl = request.getPosterImgUrl();
+        this.intro = request.getIntro();
+    }
 
 }
