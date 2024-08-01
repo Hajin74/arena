@@ -15,6 +15,7 @@ import org.example.boxingarena.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,16 +70,71 @@ public class TournamentService {
     }
 
     @Transactional(readOnly = true)
-    public List<TournamentSummaryResponse> getTournamentsByOrganizer(CustomUserDetails customUserDetails) {
+    public List<TournamentDetailResponse> getTournamentsByOrganizer(CustomUserDetails customUserDetails) {
         log.info("getTournamentsByOrganizer - service");
 
         User organizer = userRepository.findByEmail(customUserDetails.getUsername())
                 .orElseThrow(() -> new CustomException(ErrorCode.ORGANIZER_NOT_FOUND));
 
-        return tournamentRepository.findAllByOrganizerId(organizer.getId())
-                .stream()
-                .map(TournamentSummaryResponse::from)
-                .collect(Collectors.toList());
+        List<Tournament> tournaments =  tournamentRepository.findAllByOrganizerId(organizer.getId());
+        List<TournamentDetailResponse> tournamentDetailResponses = new ArrayList<>();
+        for (Tournament tournament : tournaments) {
+            tournamentDetailResponses.add(TournamentDetailResponse.from(tournament, organizer.getName()));
+        }
+
+        return tournamentDetailResponses;
+    }
+
+    @Transactional
+    public void beginApplicationPeriod(CustomUserDetails customUserDetails, Long tournamentId) {
+        log.info("beginApplicationPeriod - service : " + tournamentId);
+
+        User organizer = userRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new CustomException(ErrorCode.ORGANIZER_NOT_FOUND));
+
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND));
+
+        tournament.beginApplicationPeriod();
+    }
+
+    @Transactional
+    public void endApplicationPeriod(CustomUserDetails customUserDetails, Long tournamentId) {
+        log.info("endApplicationPeriod - service : " + tournamentId);
+
+        User organizer = userRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new CustomException(ErrorCode.ORGANIZER_NOT_FOUND));
+
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND));
+
+        tournament.endApplicationPeriod();
+    }
+
+    @Transactional
+    public void beginTournament(CustomUserDetails customUserDetails, Long tournamentId) {
+        log.info("beginTournament - service : " + tournamentId);
+
+        User organizer = userRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new CustomException(ErrorCode.ORGANIZER_NOT_FOUND));
+
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND));
+
+        tournament.beginTournament();
+    }
+
+    @Transactional
+    public void endTournament(CustomUserDetails customUserDetails, Long tournamentId) {
+        log.info("endTournament - service : " + tournamentId);
+
+        User organizer = userRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new CustomException(ErrorCode.ORGANIZER_NOT_FOUND));
+
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND));
+
+        tournament.endTournament();
     }
 
 }

@@ -24,8 +24,6 @@ public class DetailMatchResponse {
                 .tournamentId(match.getTournamentId())
                 .redCornerPlayerId(match.getRedCornerPlayerId())
                 .blueCornerPlayerId(match.getBlueCornerPlayerId())
-                .judgeName(match.getJudgeName())
-                .status(MatchType.SCHEDULED)
                 .build();
     }
 

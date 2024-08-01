@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.boxingarena.domain.Match;
+import org.example.boxingarena.domain.MatchType;
 
 @Getter
 @Setter
@@ -13,6 +14,7 @@ public class MatchCreateRequest {
     private Long tournamentId;
     private Long redCornerPlayerId;
     private Long blueCornerPlayerId;
-    private String judgeName;
+    private String groupId;
+    private MatchType type;
 
 }

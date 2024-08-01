@@ -32,7 +32,7 @@ public class Match {
         this.redCornerPlayerId = redCornerPlayerId;
         this.blueCornerPlayerId = blueCornerPlayerId;
         this.groupId = groupId;
-        this.type = MatchType.type;
+        this.type = type;
     }
 
 }

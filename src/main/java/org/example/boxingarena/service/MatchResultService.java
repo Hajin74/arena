@@ -51,7 +51,6 @@ public class MatchResultService {
         matchResultRepository.save(matchResult);
 
         // 경기 종료
-        scheduledMatch.get().closeMatch();
     }
 
     // 대회 경기결과 모두보기

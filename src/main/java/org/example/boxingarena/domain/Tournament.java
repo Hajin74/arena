@@ -50,5 +50,21 @@ public class Tournament {
         this.status = TournamentStatus.SCHEDULED;
     }
 
+    public void beginApplicationPeriod() {
+        this.status = TournamentStatus.APPLICATION_OPENING;
+    }
+
+    public void endApplicationPeriod() {
+        this.status = TournamentStatus.APPLICATION_CLOSED;
+    }
+
+    public void beginTournament() {
+        this.status = TournamentStatus.ONGOING;
+    }
+
+    public void endTournament() {
+        this.status = TournamentStatus.COMPLETED;
+    }
+
 
 }

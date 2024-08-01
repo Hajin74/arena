@@ -2,7 +2,9 @@ package org.example.boxingarena.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.boxingarena.auth.CustomUserDetails;
 import org.example.boxingarena.domain.Match;
+import org.example.boxingarena.domain.User;
 import org.example.boxingarena.dto.match.MatchCreateRequest;
 import org.example.boxingarena.exception.CustomException;
 import org.example.boxingarena.exception.ErrorCode;
@@ -22,12 +24,11 @@ public class MatchService {
     private final MatchRepository matchRepository;
 
     @Transactional
-    public void registerMatch(Long organizerId, MatchCreateRequest request) {
+    public void registerMatch(CustomUserDetails customUserDetails, MatchCreateRequest request) {
         log.info("registerMatch - service");
 
-        if (!userRepository.existsById(organizerId)) {
-            throw new CustomException(ErrorCode.ORGANIZER_NOT_FOUND);
-        }
+        User organizer = userRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new CustomException(ErrorCode.ORGANIZER_NOT_FOUND));
 
         if (!tournamentRepository.existsById(request.getTournamentId())) {
             throw new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND);
@@ -41,9 +42,15 @@ public class MatchService {
             throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
         }
 
-        Match scheduledMatch = new Match(request.getTournamentId(), request.getRedCornerPlayerId(),
-                request.getBlueCornerPlayerId(), request.getJudgeName());
-        matchRepository.save(scheduledMatch);
+        Match match = Match.builder()
+                .tournamentId(request.getTournamentId())
+                .redCornerPlayerId(request.getRedCornerPlayerId())
+                .blueCornerPlayerId(request.getBlueCornerPlayerId())
+                .groupId(request.getGroupId())
+                .type(request.getType())
+                .build();
+
+        matchRepository.save(match);
     }
 
     public List<Match> getMatchesByTournamentAndPlayer(Long tournamentId, Long playerId) {

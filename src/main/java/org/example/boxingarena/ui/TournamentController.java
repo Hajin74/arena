@@ -58,7 +58,7 @@ public class TournamentController {
     }
 
     @GetMapping("/organizer")
-    public List<TournamentSummaryResponse> getTournamentsByOrganizer(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public List<TournamentDetailResponse> getTournamentsByOrganizer(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         log.info("getTournamentsByOrganizer - api");
 
         try {
@@ -68,5 +68,51 @@ public class TournamentController {
             return null;
         }
     }
+
+    @PatchMapping("/{tournamentId}/application-period/begin")
+    public void beginApplicationPeriod(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long tournamentId) {
+        log.info("beginApplicationPeriod - api : " + tournamentId);
+
+        try {
+            tournamentService.beginApplicationPeriod(customUserDetails, tournamentId);
+        } catch (CustomException exception) {
+            log.info("beginApplicationPeriod - exception : " + exception.getMessage());
+        }
+    }
+
+    @PatchMapping("/{tournamentId}/application-period/end")
+    public void endApplicationPeriod(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long tournamentId) {
+        log.info("endApplicationPeriod - api : " + tournamentId);
+
+        try {
+            tournamentService.endApplicationPeriod(customUserDetails, tournamentId);
+        } catch (CustomException exception) {
+            log.info("endApplicationPeriod - exception : " + exception.getMessage());
+        }
+    }
+
+    @PatchMapping("/{tournamentId}/begin")
+    public void beginTournament(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long tournamentId) {
+        log.info("beginTournament - api : " + tournamentId);
+
+        try {
+            tournamentService.beginTournament(customUserDetails, tournamentId);
+        } catch (CustomException exception) {
+            log.info("beginTournament - exception : " + exception.getMessage());
+        }
+    }
+
+    @PatchMapping("/{tournamentId}/end")
+    public void endTournament(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long tournamentId) {
+        log.info("endTournament - api : " + tournamentId);
+
+        try {
+            tournamentService.endTournament(customUserDetails, tournamentId);
+        } catch (CustomException exception) {
+            log.info("endTournament - exception : " + exception.getMessage());
+        }
+    }
+
+
 
 }
