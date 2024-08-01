@@ -3,8 +3,10 @@ package org.example.boxingarena.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.boxingarena.auth.CustomUserDetails;
+import org.example.boxingarena.domain.Application;
 import org.example.boxingarena.domain.Match;
 import org.example.boxingarena.domain.User;
+import org.example.boxingarena.dto.match.DetailMatchResponse;
 import org.example.boxingarena.dto.match.MatchCreateRequest;
 import org.example.boxingarena.exception.CustomException;
 import org.example.boxingarena.exception.ErrorCode;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -22,6 +25,7 @@ public class MatchService {
     private final UserRepository userRepository;
     private final TournamentRepository tournamentRepository;
     private final MatchRepository matchRepository;
+    private final ApplicationRepository applicationRepository;
 
     @Transactional
     public void registerMatch(CustomUserDetails customUserDetails, MatchCreateRequest request) {
@@ -34,23 +38,53 @@ public class MatchService {
             throw new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND);
         }
 
-        if (!userRepository.existsById(request.getRedCornerPlayerId())) {
-            throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
-        }
+        Application redCornerApplication = applicationRepository.findById(request.getRedCornerApplicationId())
+                .orElseThrow(() -> new CustomException(ErrorCode.APPLICATION_NOT_FOUND));
+        redCornerApplication.matchApplication();
 
-        if (!userRepository.existsById(request.getBlueCornerPlayerId())) {
-            throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
-        }
+        Application blueCornerApplication = applicationRepository.findById(request.getBlueCornerApplicationId())
+                .orElseThrow(() -> new CustomException(ErrorCode.APPLICATION_NOT_FOUND));
+        blueCornerApplication.matchApplication();
 
         Match match = Match.builder()
                 .tournamentId(request.getTournamentId())
-                .redCornerPlayerId(request.getRedCornerPlayerId())
-                .blueCornerPlayerId(request.getBlueCornerPlayerId())
+                .redCornerApplicationId(request.getRedCornerApplicationId())
+                .blueCornerApplicationId(request.getBlueCornerApplicationId())
                 .groupId(request.getGroupId())
                 .type(request.getType())
                 .build();
 
         matchRepository.save(match);
+    }
+
+    @Transactional
+    public void deleteMatch(CustomUserDetails customUserDetails, Long matchId) {
+        log.info("deleteMatch - service");
+
+        User organizer = userRepository.findByEmail(customUserDetails.getUsername())
+                .orElseThrow(() -> new CustomException(ErrorCode.ORGANIZER_NOT_FOUND));
+
+        Match match = matchRepository.findById(matchId)
+                .orElseThrow(() ->  new CustomException(ErrorCode.MATCH_NOT_FOUND));
+
+        Application redCornerApplication = applicationRepository.findById(match.getRedCornerApplicationId())
+                .orElseThrow(() -> new CustomException(ErrorCode.APPLICATION_NOT_FOUND));
+        redCornerApplication.approveApplication();
+
+        Application blueCornerApplication = applicationRepository.findById(match.getBlueCornerApplicationId())
+                .orElseThrow(() -> new CustomException(ErrorCode.APPLICATION_NOT_FOUND));
+        blueCornerApplication.approveApplication();
+
+        matchRepository.delete(match);
+    }
+
+    public List<DetailMatchResponse> getMatchesByTournament(Long tournamentId) {
+        log.info("getMatchesByTournament - service");
+
+        return matchRepository.findAllByTournamentId(tournamentId)
+                .stream()
+                .map(DetailMatchResponse::from)
+                .collect(Collectors.toList());
     }
 
     public List<Match> getMatchesByTournamentAndPlayer(Long tournamentId, Long playerId) {

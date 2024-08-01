@@ -12,6 +12,8 @@ import org.example.boxingarena.domain.MatchType;
 public class MatchCreateRequest {
 
     private Long tournamentId;
+    private Long redCornerApplicationId;
+    private Long blueCornerApplicationId;
     private Long redCornerPlayerId;
     private Long blueCornerPlayerId;
     private String groupId;

@@ -40,4 +40,8 @@ public class Application {
         this.status = ApplicationStatus.CANCEL;
     }
 
+    public void matchApplication() {
+        this.status = ApplicationStatus.MATCHED;
+    }
+
 }

@@ -13,17 +13,19 @@ public class DetailMatchResponse {
 
     private Long matchId;
     private Long tournamentId;
+    private String groupId;
     private Long redCornerPlayerId;
     private Long blueCornerPlayerId;
-    private String judgeName;
-    private MatchType status;
+    private MatchType type;
 
     public static DetailMatchResponse from(Match match) {
         return DetailMatchResponse.builder()
                 .matchId(match.getId())
                 .tournamentId(match.getTournamentId())
+                .groupId(match.getGroupId())
                 .redCornerPlayerId(match.getRedCornerPlayerId())
                 .blueCornerPlayerId(match.getBlueCornerPlayerId())
+                .type(match.getType())
                 .build();
     }
 

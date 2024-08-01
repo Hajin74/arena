@@ -17,8 +17,11 @@ public class Match {
 
     private Long tournamentId;
 
-    private Long redCornerPlayerId;
+    private Long redCornerApplicationId;
 
+    private Long blueCornerApplicationId;
+
+    private Long redCornerPlayerId;
     private Long blueCornerPlayerId;
 
     private String groupId;
@@ -27,10 +30,10 @@ public class Match {
     private MatchType type;
 
     @Builder
-    public Match(Long tournamentId, Long redCornerPlayerId, Long blueCornerPlayerId, String groupId, MatchType type) {
+    public Match(Long tournamentId, Long redCornerApplicationId, Long blueCornerApplicationId, String groupId, MatchType type) {
         this.tournamentId = tournamentId;
-        this.redCornerPlayerId = redCornerPlayerId;
-        this.blueCornerPlayerId = blueCornerPlayerId;
+        this.redCornerApplicationId = redCornerApplicationId;
+        this.blueCornerApplicationId = blueCornerApplicationId;
         this.groupId = groupId;
         this.type = type;
     }

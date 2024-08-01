@@ -33,6 +33,29 @@ public class MatchController {
         }
     }
 
+    @DeleteMapping("/{matchId}")
+    public void deleteMatch(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long matchId) {
+        log.info("deleteMatch - api");
+
+        try {
+            matchService.deleteMatch(customUserDetails, matchId);
+        } catch (CustomException exception) {
+            log.info("deleteMatch - exception : " + exception.getMessage());
+        }
+    }
+
+    @GetMapping("/tournament/{tournamentId}")
+    public List<DetailMatchResponse> getMatchesByTournament(@PathVariable Long tournamentId) {
+        log.info("getMatchesByTournament - api");
+
+        try {
+            return matchService.getMatchesByTournament(tournamentId);
+        } catch (CustomException exception) {
+            log.info("getMatchesByTournament - exception : " + exception.getMessage());
+            return null;
+        }
+    }
+
     @GetMapping
     public List<DetailMatchResponse> getMatchesByTournamentAndPlayer(Long tournamentId, Long playerId) {
         log.info("getMatchesByTournamentAndPlayer - api");
