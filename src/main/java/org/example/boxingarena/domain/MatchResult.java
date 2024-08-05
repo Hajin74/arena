@@ -1,6 +1,7 @@
 package org.example.boxingarena.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,6 +25,7 @@ public class MatchResult {
 
     private String score; // json 형식으로 저장할 것임
 
+    @Builder
     public MatchResult(Long tournamentId, Long matchId, Long winnerId, MatchEndType matchEndType, String score) {
         this.tournamentId = tournamentId;
         this.matchId = matchId;

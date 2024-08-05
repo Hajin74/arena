@@ -2,6 +2,7 @@ package org.example.boxingarena.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.boxingarena.auth.CustomUserDetails;
 import org.example.boxingarena.domain.Match;
 import org.example.boxingarena.domain.MatchResult;
 import org.example.boxingarena.dto.match.MatchResultCreateRequest;
@@ -25,10 +26,10 @@ public class MatchResultService {
     private final MatchResultRepository matchResultRepository;
 
     @Transactional
-    public void recordMatchScore(Long organizerId, MatchResultCreateRequest request) {
+    public void recordMatchScore(CustomUserDetails customUserDetails, MatchResultCreateRequest request) {
         log.info("recordMatchScore - service");
 
-        if (!userRepository.existsById(organizerId)) {
+        if (!userRepository.existsByEmail(customUserDetails.getUsername())) {
             throw new CustomException(ErrorCode.ORGANIZER_NOT_FOUND);
         }
 
@@ -36,18 +37,21 @@ public class MatchResultService {
             throw new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND);
         }
 
-        Optional<Match> scheduledMatch = matchRepository.findById(request.getMatchId());
-        if (scheduledMatch.isEmpty()) {
-            throw new CustomException(ErrorCode.MATCH_NOT_FOUND);
-        }
+        Match scheduledMatch = matchRepository.findById(request.getMatchId())
+                .orElseThrow(() -> new CustomException(ErrorCode.MATCH_NOT_FOUND));
 
         if (!userRepository.existsById(request.getWinnerId())) {
             throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
         }
 
         // 경기 결과 저장
-        MatchResult matchResult = new MatchResult(request.getTournamentId(), request.getMatchId(),
-                request.getWinnerId(), request.getMatchEndType(), request.getScore());
+        MatchResult matchResult = MatchResult.builder()
+                .tournamentId(request.getTournamentId())
+                .matchId(request.getMatchId())
+                .winnerId(request.getWinnerId())
+                .matchEndType(request.getMatchEndType())
+                .score(request.getScore())
+                .build();
         matchResultRepository.save(matchResult);
 
         // 경기 종료

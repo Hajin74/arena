@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.boxingarena.auth.CustomUserDetails;
 import org.example.boxingarena.dto.application.ApplicationFormRequest;
 import org.example.boxingarena.dto.application.DetailApplicationResponse;
+import org.example.boxingarena.dto.application.MyApplicationListResponse;
 import org.example.boxingarena.exception.CustomException;
 import org.example.boxingarena.service.ApplicationService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -78,7 +79,7 @@ public class ApplicationController {
     }
 
     @GetMapping("/player")
-    public List<DetailApplicationResponse> getApplicationsByPlayer(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public List<MyApplicationListResponse> getApplicationsByPlayer(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         log.info("getApplicationsByPlayer - api");
 
         try {

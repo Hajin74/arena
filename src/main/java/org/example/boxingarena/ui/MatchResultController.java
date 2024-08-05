@@ -3,10 +3,12 @@ package org.example.boxingarena.ui;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.boxingarena.auth.CustomUserDetails;
 import org.example.boxingarena.dto.match.DetailMatchResultResponse;
 import org.example.boxingarena.dto.match.MatchResultCreateRequest;
 import org.example.boxingarena.exception.CustomException;
 import org.example.boxingarena.service.MatchResultService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,18 +23,18 @@ public class MatchResultController {
     private final MatchResultService matchResultService;
 
     @PostMapping
-    public void recordMatchScore(Long organizerId, @RequestBody @Valid MatchResultCreateRequest request) {
+    public void recordMatchScore(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody @Valid MatchResultCreateRequest request) {
         log.info("recordMatchScore - api");
 
         try {
-            matchResultService.recordMatchScore(organizerId, request);
+            matchResultService.recordMatchScore(customUserDetails, request);
         } catch (CustomException exception) {
             log.info("recordMatchScore - exception: " + exception.getMessage());
         }
     }
 
-    @GetMapping
-    public List<DetailMatchResultResponse> getMatchesResultsByTournament(Long tournamentId) {
+    @GetMapping("/tournament/{tournamentId}")
+    public List<DetailMatchResultResponse> getMatchesResultsByTournament(@PathVariable Long tournamentId) {
         log.info("getMatchesResultsByTournament - api");
 
         try {

@@ -9,6 +9,7 @@ import org.example.boxingarena.domain.TournamentStatus;
 import org.example.boxingarena.domain.User;
 import org.example.boxingarena.dto.application.ApplicationFormRequest;
 import org.example.boxingarena.dto.application.DetailApplicationResponse;
+import org.example.boxingarena.dto.application.MyApplicationListResponse;
 import org.example.boxingarena.exception.CustomException;
 import org.example.boxingarena.exception.ErrorCode;
 import org.example.boxingarena.repository.ApplicationRepository;
@@ -111,6 +112,7 @@ public class ApplicationService {
         }
 
         application.get().cancelApplication();
+
     }
 
     @Transactional(readOnly = true)
@@ -126,21 +128,21 @@ public class ApplicationService {
     }
 
     @Transactional(readOnly = true)
-    public List<DetailApplicationResponse> getApplicationsByPlayer(CustomUserDetails customUserDetails) {
+    public List<MyApplicationListResponse> getApplicationsByPlayer(CustomUserDetails customUserDetails) {
         log.info("getMyApplication - service");
 
         User player = userRepository.findByEmail(customUserDetails.getUsername())
-                .orElseThrow(() -> new CustomException(ErrorCode.ORGANIZER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.PLAYER_NOT_FOUND));
 
-        if (!userRepository.existsById(player.getId())) {
-            throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
+        List<MyApplicationListResponse> myApplicationListResponses = new ArrayList<>();
+        List<Application> applications = applicationRepository.findAllByPlayerId(player.getId());
+        for (Application application : applications) {
+            Tournament tournament = tournamentRepository.findById(application.getTournamentId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.TOURNAMENT_NOT_FOUND));
+            myApplicationListResponses.add(MyApplicationListResponse.from(application, tournament.getName(), player.getName()));
         }
 
-        return applicationRepository.findAllByPlayerId(player.getId())
-                .stream()
-                .map(DetailApplicationResponse::from)
-                .collect(Collectors.toList());
-
+        return myApplicationListResponses;
     }
 
     @Transactional(readOnly = true)

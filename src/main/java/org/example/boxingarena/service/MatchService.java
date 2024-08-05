@@ -14,6 +14,7 @@ import org.example.boxingarena.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,10 +82,26 @@ public class MatchService {
     public List<DetailMatchResponse> getMatchesByTournament(Long tournamentId) {
         log.info("getMatchesByTournament - service");
 
-        return matchRepository.findAllByTournamentId(tournamentId)
-                .stream()
-                .map(DetailMatchResponse::from)
-                .collect(Collectors.toList());
+        List<Match> matches = matchRepository.findAllByTournamentId(tournamentId);
+        List<DetailMatchResponse> matchResponses = new ArrayList<>();
+        for (Match match : matches) {
+
+            Application redCornerApplication = applicationRepository.findById(match.getRedCornerApplicationId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.APPLICATION_NOT_FOUND));
+
+            User redCornerPlayer = userRepository.findById(redCornerApplication.getPlayerId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.PLAYER_NOT_FOUND));
+
+            Application blueCornerApplication = applicationRepository.findById(match.getBlueCornerApplicationId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.APPLICATION_NOT_FOUND));
+
+            User blueCornerPlayer = userRepository.findById(blueCornerApplication.getPlayerId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.PLAYER_NOT_FOUND));
+
+            matchResponses.add(DetailMatchResponse.from(match, redCornerPlayer.getName(), blueCornerPlayer.getName()));
+        }
+
+       return matchResponses;
     }
 
     public List<Match> getMatchesByTournamentAndPlayer(Long tournamentId, Long playerId) {
